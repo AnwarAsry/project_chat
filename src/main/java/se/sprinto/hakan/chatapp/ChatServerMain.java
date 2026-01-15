@@ -14,11 +14,8 @@ public class ChatServerMain implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(ChatServerMain.class, args);
-
     }
 
     @Override
-    public void run(String... args) throws Exception {
-
-    }
+    public void run(String... args) throws Exception {}
 }

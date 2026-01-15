@@ -14,12 +14,10 @@ public class UserService {
     }
 
     public User login(String username, String password) {
-        return repo.findByUsernameAndPassword(username, password);
+        return repo.login(username, password);
     }
 
     public User register(User user) {
         return repo.save(user);
     }
-
-
 }

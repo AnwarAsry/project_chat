@@ -1,0 +1,127 @@
+Först identifierar jag vilka entiteter som ska finnas, sedan anger deras
+respektive attribut. Därefter kollar jag vad för relationer som finns
+mellan entiteterna och bedömmer om modellerna passar kraven.
+Eftersom det finns två entiteter med en many-to-many relation, skapar
+jag en tabel för dessa. Jag sedan sammanställer allt till en logisk
+model och skriver deras SQL promptar.
+
+--- Steg 1: Entiteter ---
+
+User
+Message
+Comment
+Tag
+Profile
+
+--- Steg 2: Attribut ---
+
+User:
+    username
+    password
+
+Message:
+    text
+
+Comment:
+    text
+
+Profile:
+    image_url
+    description
+
+Tag:
+    label
+
+--- Steg 3: Relationer ---
+
+User 1 --- * Message
+User 1 --- 1 Profile
+User 1 --- * Comment
+Message 1 --- * Comment
+Message * --- * Tag
+
+--- Steg 4: Krav ---
+
+Meddelanden kan ha flera kommentarer? JA
+Kommentarerna är kopplade till användaren? JA
+Användaren har en profil? JA
+Profil har bild + beskrivning? JA
+Meddelanden kan ha flera taggar? JA
+Taggar kan ha flera meddelanden? JA
+
+--- Steg 5: Logiska model ---
+
+User:
+    Id: (PK)
+    username
+    password
+    profile_id: (FK)
+
+Message:
+    Id: (PK)
+    text
+    user_id: (FK)
+
+Comment:
+    Id: (PK)
+    text
+    message_id: (FK)
+    user_id: (FK)
+
+Profile:
+    Id: (PK)
+    image_url
+    description
+
+Tag:
+    Id: (PK)
+    label
+
+Message_Tag:
+    tag_id: (FK)
+    message_id: (FK)
+
+--- Steg 5: SQL ---
+
+CREATE TABLE Profile (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    image_url VARCHAR(500) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE Users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    profile_id BIGINT,
+    FOREIGN KEY (profile_id) REFERENCES Profile(id)
+);
+
+CREATE TABLE Messages (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    text VARCHAR(255) NOT NULL,
+    user_id BIGINT,
+    FOREIGN KEY (user_id) REFERENCES Users(id)
+);
+
+CREATE TABLE Comment (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    text VARCHAR(255) NOT NULL,
+    message_id BIGINT,
+    FOREIGN KEY (message_id) REFERENCES Messages(id),
+    user_id BIGINT,
+    FOREIGN KEY (user_id) REFERENCES Users(id)
+);
+
+CREATE TABLE Tag (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    label VARCHAR(50)
+);
+
+CREATE TABLE Message_Tag (
+    tag_id BIGINT,
+    message_id BIGINT,
+    PRIMARY KEY (tag_id, message_id),
+    FOREIGN KEY (message_id) REFERENCES Messages(id),
+    FOREIGN KEY (tag_id) REFERENCES Tag(id)
+);

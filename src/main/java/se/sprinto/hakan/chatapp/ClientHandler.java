@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ClientHandler implements Runnable {
@@ -86,7 +85,7 @@ public class ClientHandler implements Runnable {
                 if (messageForUser != null && !messageForUser.isEmpty()) {
                     writer.println("Din chatthistorik:");
                     for (Message m : messageForUser) {
-                        writer.println("[" + m.getTimestamp() + "] " + m.getText());
+                        writer.println("[" + m.getCreatedAt() + "] " + m.getText());
                     }
                 }
             }
@@ -107,13 +106,14 @@ public class ClientHandler implements Runnable {
                         writer.println("Inga meddelanden sparade.");
                     } else {
                         for (Message m : messages) {
-                            writer.println("[" + m.getTimestamp() + "] " + m.getText());
+                            writer.println("[" + m.getCreatedAt() + "] " + m.getText());
                         }
                     }
 
                 } else {
                     server.broadcast(msg, this);
-                    messageService.save(new Message(user, msg, LocalDateTime.now()));
+                    // Ändrad
+                    messageService.save(user, msg);
                 }
             }
 
